@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class TankShooting : MonoBehaviour {
   public int m_PlayerNumber = 1;              // Used to identify the different players.
+  public LineRenderer m_Laser;
   public Rigidbody m_Shell;                   // Prefab of the shell.
   public Transform m_FireTransform;           // A child of the tank where the shells are spawned.
   public Slider m_AimSlider;                  // A child of the tank that displays the current launch force.
@@ -19,11 +20,15 @@ public class TankShooting : MonoBehaviour {
   private float m_ChargeSpeed;                // How fast the launch force increases, based on the max charge time.
   private bool m_Fired;                       // Whether or not the shell has been launched with this button press.
 
-
   private void OnEnable() {
     // When the tank is turned on, reset the launch force and the UI
     m_CurrentLaunchForce = m_MinLaunchForce;
     m_AimSlider.value = m_MinLaunchForce;
+
+    if (m_PlayerNumber == 1) {
+      m_MinLaunchForce = 8f;
+      m_MaxChargeTime = 0.5f;
+    }
   }
 
 
@@ -70,18 +75,34 @@ public class TankShooting : MonoBehaviour {
     }
   }
 
+  private void InitLaser() {
+    m_Laser.SetPosition(0, Vector3.zero);
+    m_Laser.SetPosition(1, Vector3.zero);
+  }
 
   private void Fire() {
     // Set the fired flag so only Fire is only called once.
     m_Fired = true;
 
-    // Create an instance of the shell and store a reference to it's rigidbody.
-    Rigidbody shellInstance =
-        Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
+    if (m_PlayerNumber == 1) {
+      // Debug.DrawRay(transform.position, transform.forward, Color.red, 0.4f);
+      RaycastHit hit;
+      if (Physics.Raycast(transform.position, transform.forward, out hit)) {
+        // Debug.Log(hit.transform.position);
+        m_Laser.startWidth = 0.1f + m_CurrentLaunchForce / 30f;
+        m_Laser.endWidth = 0.1f + m_CurrentLaunchForce / 30f;
+        m_Laser.SetPosition(0, transform.position + Vector3.up * 1);
+        m_Laser.SetPosition(1, hit.point + Vector3.up * 1);
+        Invoke("InitLaser", 0.5f);
+      }
+    } else {
+      // Create an instance of the shell and store a reference to it's rigidbody.
+      Rigidbody shellInstance =
+          Instantiate(m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
 
-    // Set the shell's velocity to the launch force in the fire position's forward direction.
-    shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward; ;
-
+      // Set the shell's velocity to the launch force in the fire position's forward direction.
+      shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward; ;
+    }
     // Change the clip to the firing clip and play it.
     m_ShootingAudio.clip = m_FireClip;
     m_ShootingAudio.Play();

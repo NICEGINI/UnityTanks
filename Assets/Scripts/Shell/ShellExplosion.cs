@@ -2,6 +2,7 @@
 
 public class ShellExplosion : MonoBehaviour {
   public LayerMask m_TankMask;                        // Used to filter what the explosion affects, this should be set to "Players".
+  public LayerMask m_BuildingMask;                     // Used to filter what the explosion affects, this should be set to "Buildings".
   public ParticleSystem m_ExplosionParticles;         // Reference to the particles that will play on explosion.
   public AudioSource m_ExplosionAudio;                // Reference to the audio that will play on explosion.
   public float m_MaxDamage = 100f;                    // The amount of damage done if the explosion is centred on a tank.
@@ -18,7 +19,8 @@ public class ShellExplosion : MonoBehaviour {
 
   private void OnTriggerEnter(Collider other) {
     // Collect all the colliders in a sphere from the shell's current position to a radius of the explosion radius.
-    Collider[] colliders = Physics.OverlapSphere(transform.position, m_ExplosionRadius);
+    Collider[] colliders = Physics.OverlapSphere(transform.position, m_ExplosionRadius, m_TankMask);
+    Collider[] buildingColliders = Physics.OverlapSphere(transform.position, m_ExplosionRadius, m_BuildingMask);
 
     // Go through all the colliders...
     for (int i = 0; i < colliders.Length; i++) {
@@ -44,6 +46,18 @@ public class ShellExplosion : MonoBehaviour {
 
       // Deal this damage to the tank.
       targetHealth.TakeDamage(damage);
+    }
+
+    for (int i = 0; i < buildingColliders.Length; i++) {
+      BuildingHealth buildingHealth = buildingColliders[i].GetComponentInChildren<BuildingHealth>();
+      if (!buildingHealth)
+        continue;
+
+      // Calculate the amount of damage the target should take based on it's distance from the shell.
+      float damage = CalculateDamage(buildingColliders[i].transform.position);
+
+      // Deal this damage to the tank.
+      buildingHealth.TakeDamage(damage);
     }
 
     // Unparent the particles from the shell.
