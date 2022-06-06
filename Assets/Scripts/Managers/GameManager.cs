@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour {
@@ -40,6 +42,13 @@ public class GameManager : MonoBehaviour {
           Instantiate(m_TankPrefab[i], m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
       m_Tanks[i].m_PlayerNumber = i + 1;
       m_Tanks[i].Setup();
+      if (i == 0) {
+        m_Tanks[i].m_Instance.tag = "Player";
+        m_Tanks[i].m_Instance.GetComponent<EnemyNavAgent>().enabled = false;
+        m_Tanks[i].m_Instance.GetComponent<NavMeshAgent>().enabled = false;
+      } else {
+        m_Tanks[i].m_Instance.GetComponent<TankMovement>().enabled = false;
+      }
     }
   }
 
