@@ -26,7 +26,7 @@ public class EnemyNavAgent : MonoBehaviour {
   }
 
   private void Start() {
-    _agent.destination = WayPoints[_currentWayPointIdx];  
+    _agent.destination = WayPoints[_currentWayPointIdx];
   }
 
   private void OnEnable() {

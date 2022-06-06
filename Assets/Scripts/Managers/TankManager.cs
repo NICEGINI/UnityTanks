@@ -23,12 +23,14 @@ public class TankManager {
 
   public void Setup() {
     // Get references to the components.
-    m_Movement = m_Instance.GetComponent<TankMovement>();
+    if (m_PlayerNumber == 1)
+      m_Movement = m_Instance.GetComponent<TankMovement>();
     m_Shooting = m_Instance.GetComponent<TankShooting>();
     m_CanvasGameObject = m_Instance.GetComponentInChildren<Canvas>().gameObject;
 
     // Set the player numbers to be consistent across the scripts.
-    m_Movement.m_PlayerNumber = m_PlayerNumber;
+    if (m_PlayerNumber == 1)
+      m_Movement.m_PlayerNumber = m_PlayerNumber;
     m_Shooting.m_PlayerNumber = m_PlayerNumber;
 
     // Create a string using the correct color that says 'PLAYER 1' etc based on the tank's color and the player's number.
@@ -47,8 +49,10 @@ public class TankManager {
 
   // Used during the phases of the game where the player shouldn't be able to control their tank.
   public void DisableControl() {
-    m_Movement.enabled = false;
-    m_Shooting.enabled = false;
+    if (m_PlayerNumber == 1) {
+      m_Movement.enabled = false;
+      m_Shooting.enabled = false;
+    }
 
     m_CanvasGameObject.SetActive(false);
   }
@@ -56,8 +60,10 @@ public class TankManager {
 
   // Used during the phases of the game where the player should be able to control their tank.
   public void EnableControl() {
-    m_Movement.enabled = true;
-    m_Shooting.enabled = true;
+    if (m_PlayerNumber == 1) {
+      m_Movement.enabled = true;
+      m_Shooting.enabled = true;
+    }
 
     m_CanvasGameObject.SetActive(true);
   }

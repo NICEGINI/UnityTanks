@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour {
   public float m_EndDelay = 3f;               // The delay between the end of RoundPlaying and RoundEnding phases.
   public CameraControl m_CameraControl;       // Reference to the CameraControl script for control during different phases.
   public Text m_MessageText;                  // Reference to the overlay Text to display winning text, etc.
-  public GameObject[] m_TankPrefab;             // Reference to the prefab the players will control.
+  public GameObject m_TankPrefab;             // Reference to the prefab the players will control.
   public TankManager[] m_Tanks;               // A collection of managers for enabling and disabling different aspects of the tanks.
 
 
@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour {
     for (int i = 0; i < m_Tanks.Length; i++) {
       // ... create them, set their player number and references needed for control.
       m_Tanks[i].m_Instance =
-          Instantiate(m_TankPrefab[i], m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
+          Instantiate(m_TankPrefab, m_Tanks[i].m_SpawnPoint.position, m_Tanks[i].m_SpawnPoint.rotation) as GameObject;
       m_Tanks[i].m_PlayerNumber = i + 1;
       m_Tanks[i].Setup();
       if (i == 0) {
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour {
     // This code is not run until 'RoundEnding' has finished.  At which point, check if a game winner has been found.
     if (m_GameWinner != null) {
       // If there is a game winner, restart the level.
-      Application.LoadLevel(Application.loadedLevel);
+      SceneManager.LoadScene(0);
     } else {
       // If there isn't a winner yet, restart this coroutine so the loop continues.
       // Note that this coroutine doesn't yield.  This means that the current version of the GameLoop will end.
