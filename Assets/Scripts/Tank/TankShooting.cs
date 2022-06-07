@@ -85,9 +85,9 @@ public class TankShooting : MonoBehaviour {
     m_Fired = true;
 
     if (m_PlayerNumber == 1) {
-      // Debug.DrawRay(transform.position, transform.forward, Color.red, 0.4f);
+      // Debug.DrawRay(transform.position, transform.forward * 20, Color.red, 0.4f);
       RaycastHit hit;
-      if (Physics.Raycast(transform.position, transform.forward, out hit)) {
+      if (Physics.Raycast(m_FireTransform.position, transform.forward, out hit)) {
         // Debug.Log(hit.transform.position);
         Rigidbody targetRigidbody = hit.collider.GetComponent<Rigidbody>();
 
