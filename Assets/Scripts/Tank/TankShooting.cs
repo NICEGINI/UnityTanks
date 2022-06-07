@@ -89,6 +89,19 @@ public class TankShooting : MonoBehaviour {
       RaycastHit hit;
       if (Physics.Raycast(transform.position, transform.forward, out hit)) {
         // Debug.Log(hit.transform.position);
+        Rigidbody targetRigidbody = hit.collider.GetComponent<Rigidbody>();
+
+        if (!targetRigidbody) { // 타겟 리지드바디 없는 경우 -> 건물 혹은 빈 곳
+          BuildingHealth buildingHealth = hit.collider.GetComponentInChildren<BuildingHealth>();
+          if (buildingHealth) // 건물인 경우
+            buildingHealth.TakeDamage(100);
+        } else {
+          TankHealth targetHealth = targetRigidbody.GetComponentInChildren<TankHealth>();
+          if (targetHealth) // 탱크인 경우
+            targetHealth.TakeDamage(100);
+        }
+
+        // 라인 그리는 코드
         m_Laser.startWidth = 0.1f + m_CurrentLaunchForce / 30f;
         m_Laser.endWidth = 0.1f + m_CurrentLaunchForce / 30f;
         m_Laser.SetPosition(0, transform.position + Vector3.up * 1);
